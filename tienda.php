@@ -152,7 +152,7 @@ if (empty($products)) {
             'discount' => 68000,
             'category' => 'ropa',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/hoodie_personalizado.jpg',
+            'image' => 'uploads/tienda/studio_buzo_basicos.jpg',
             'description' => 'Buzo térmico perchado de suave textura con capota y bolsillo. Estampado duradero con tu diseño, mensaje o iniciales.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, me gustaría encargar un Buzo/Hoodie Personalizado. ¿Qué tallas y colores tienen?")
         ],
