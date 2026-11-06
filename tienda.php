@@ -24,6 +24,61 @@ try {
     $pdo->exec("UPDATE products SET whatsapp_link = REPLACE(whatsapp_link, '573000000000', '573162522445') WHERE whatsapp_link LIKE '%573000000000%'");
     $pdo->exec("UPDATE products SET whatsapp_link = REPLACE(whatsapp_link, '573219602652', '573162522445') WHERE whatsapp_link LIKE '%573219602652%'");
 
+    // 1b. Migración única (nov 2026): fotos reales, quitar productos de ejemplo y productos nuevos.
+    // Se registra en site_migrations para no pisar cambios hechos después desde el panel.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_migrations (name VARCHAR(100) PRIMARY KEY, applied_at DATETIME DEFAULT CURRENT_TIMESTAMP)");
+    $migName = 'tienda_fotos_reales_2026_11';
+    $done = $pdo->prepare("SELECT COUNT(*) FROM site_migrations WHERE name = ?");
+    $done->execute([$migName]);
+    if ((int)$done->fetchColumn() === 0) {
+        // Productos de ejemplo del primer montaje (julio 2026)
+        $pdo->exec("DELETE FROM products WHERE id IN (1,2,3,4,5) AND name IN ('Camiseta Solidaria Blanca','Mug ADN de Amor','Agenda de Gratitud 2025','Pulsera Fe y Esperanza','Kit Navidad Solidaria')");
+        $pdo->exec("UPDATE products SET name = 'Pulsera de Amor' WHERE name = 'Pulcera de Amor'");
+
+        $img = $pdo->prepare("UPDATE products SET image = ? WHERE name = ?");
+        foreach ([
+            'Camiseta Solidaria Personalizable'                => 'uploads/tienda/real_camiseta_carinito.jpg',
+            'Mug Cerámico Personalizado (11 oz)'               => 'uploads/tienda/vg_mug.jpg',
+            'Termo Metálico Deportivo Personalizable'          => 'uploads/tienda/vg_termo.jpg',
+            'Rompecabezas Personalizado con Foto (120 piezas)' => 'uploads/tienda/vg_rompecabezas.jpg',
+            'Rompecabezas Familiar Solidario (300 piezas)'     => 'uploads/tienda/vg_rompecabezas_detalle.jpg',
+            'Rompecabezas Infantil Educativo (48 piezas)'      => 'uploads/tienda/vg_rompecabezas_detalle.jpg',
+        ] as $pName => $pImg) {
+            $img->execute([$pImg, $pName]);
+        }
+
+        // Precios de aliado: VG Personalizados le deja cada producto a la fundación $5.000 por debajo
+        // de su precio de venta, y la fundación lo vende $5.000 por encima (p. ej. camiseta 25.000 → 30.000).
+        $precio = $pdo->prepare("UPDATE products SET price = ?, discount = NULL WHERE name = ?");
+        foreach ([
+            'Camiseta Solidaria Personalizable'                => 30000, // VG 25.000
+            'Mug Cerámico Personalizado (11 oz)'               => 30000, // VG 25.000
+            'Termo Metálico Deportivo Personalizable'          => 40000, // VG 35.000
+            'Rompecabezas Personalizado con Foto (120 piezas)' => 35000, // VG 30.000
+        ] as $pName => $pPrice) {
+            $precio->execute([$pPrice, $pName]);
+        }
+
+        $exists = $pdo->prepare("SELECT COUNT(*) FROM products WHERE name = ?");
+        $ins = $pdo->prepare("INSERT INTO products (name, price, discount, whatsapp_link, image, category, description, is_customizable) VALUES (?, ?, NULL, ?, ?, ?, ?, 1)");
+        foreach ([
+            ['Tula Personalizada con tu Diseño', 30000, 'uploads/tienda/real_tula_maria_paz.jpg', 'accesorios',
+                'Tula en lona color crudo con asas largas, estampada con el nombre, personaje o diseño que elijas. Ideal para el colegio, regalos de cumpleaños y fechas especiales.'],
+            ['Cojín Personalizado con Fotos', 47000,'uploads/tienda/vg_cojin.jpg', 'accesorios',
+                'Cojín en felpa suave con relleno incluido. Estampa tus fotos familiares, una dedicatoria o tu diseño favorito; los colores no se borran con los lavados.'],
+            ['Libreta Personalizada de Pasta Dura', 50000,'uploads/tienda/vg_libreta.jpg', 'accesorios',
+                'Libreta con anillado metálico y portada en pasta dura personalizada con tu nombre, frase, logo o diseño. Perfecta para el colegio, la oficina o como regalo.'],
+        ] as [$pName, $pPrice, $pImg, $pCat, $pDesc]) {
+            $exists->execute([$pName]);
+            if ((int)$exists->fetchColumn() === 0) {
+                $msg = "¡Hola Fundación ADN de Amor! Lo quiero: me gustaría personalizar el producto \"{$pName}\". ¿Cómo les envío mi foto o diseño?";
+                $ins->execute([$pName, $pPrice, 'https://wa.me/573162522445?text=' . urlencode($msg), $pImg, $pCat, $pDesc]);
+            }
+        }
+
+        $pdo->prepare("INSERT INTO site_migrations (name) VALUES (?)")->execute([$migName]);
+    }
+
     // 2. Verificar si existen rompecabezas o productos personalizables; si no, inicializar
     $checkPuzzles = $pdo->query("SELECT COUNT(*) FROM products WHERE category = 'rompecabezas'")->fetchColumn();
     if ($checkPuzzles == 0 && file_exists(__DIR__ . '/admin/setup_tienda_personalizada.php')) {
@@ -48,11 +103,11 @@ if (empty($products)) {
         [
             'id' => 101,
             'name' => 'Camiseta Solidaria Personalizable',
-            'price' => 35000,
-            'discount' => 30000,
+            'price' => 30000,
+            'discount' => null,
             'category' => 'ropa',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/camiseta_personalizada.jpg',
+            'image' => 'uploads/tienda/real_camiseta_carinito.jpg',
             'description' => 'Camiseta en algodón 100% peinado premium (180g). Personalízala con tu foto, frase o logo. Tallas de niño a adulto (XS a XL).',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, me interesa personalizar la Camiseta Solidaria. ¿Cómo les envío mi diseño o foto?")
         ],
@@ -81,11 +136,11 @@ if (empty($products)) {
         [
             'id' => 104,
             'name' => 'Mug Cerámico Personalizado (11 oz)',
-            'price' => 22000,
-            'discount' => 18000,
+            'price' => 30000,
+            'discount' => null,
             'category' => 'vasos',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/mug_personalizado.jpg',
+            'image' => 'uploads/tienda/vg_mug.jpg',
             'description' => 'Taza de cerámica blanca brillante premium (11 oz). Impresión a full color apta para microondas y lavavajillas con tu foto o dedicatoria.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, quiero pedir un Mug Cerámico Personalizado con foto. ¿Cómo se los envío?")
         ],
@@ -103,22 +158,22 @@ if (empty($products)) {
         [
             'id' => 106,
             'name' => 'Termo Metálico Deportivo Personalizable',
-            'price' => 45000,
-            'discount' => 38000,
+            'price' => 40000,
+            'discount' => null,
             'category' => 'vasos',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/termo_personalizado.jpg',
+            'image' => 'uploads/tienda/vg_termo.jpg',
             'description' => 'Botella térmica de 600ml en acero inoxidable con tapa hermética y mosquetón. Grabado o estampado duradero con tu nombre o logo.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, quiero encargar un Termo Metálico Deportivo Personalizado. ¿Qué colores tienen?")
         ],
         [
             'id' => 107,
             'name' => 'Rompecabezas Personalizado con Foto (120 piezas)',
-            'price' => 34000,
-            'discount' => 29000,
+            'price' => 35000,
+            'discount' => null,
             'category' => 'rompecabezas',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/rompecabezas_foto.jpg',
+            'image' => 'uploads/tienda/vg_rompecabezas.jpg',
             'description' => 'Rompecabezas en cartón rígido brillante con acabado perlado. Personalizado con tu foto familiar favorita. Incluye caja personalizada.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, quiero encargar un Rompecabezas Personalizado con Foto de 120 piezas. ¿Cuál es el procedimiento?")
         ],
@@ -129,7 +184,7 @@ if (empty($products)) {
             'discount' => 42000,
             'category' => 'rompecabezas',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/rompecabezas_familiar.jpg',
+            'image' => 'uploads/tienda/vg_rompecabezas_detalle.jpg',
             'description' => 'Rompecabezas de gran formato (300 piezas) para armar y disfrutar en familia, convirtiendo tus fotos en un juego con propósito.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, me gustaría el Rompecabezas Familiar de 300 piezas. ¿A qué resolución debe ser la foto?")
         ],
@@ -140,7 +195,7 @@ if (empty($products)) {
             'discount' => 22000,
             'category' => 'rompecabezas',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/rompecabezas_infantil.jpg',
+            'image' => 'uploads/tienda/vg_rompecabezas_detalle.jpg',
             'description' => 'Diseñado para niños pequeños con piezas grandes y cartón extra resistente. Personalízalo con el nombre del niño o motivos didácticos.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, me interesa el Rompecabezas Infantil Educativo de 48 piezas personalizado.")
         ]
@@ -497,7 +552,79 @@ if (empty($products)) {
             flex-wrap: wrap;
         }
 
+        /* Vista ampliada del producto */
+        .product-img-wrapper, .product-title { cursor: pointer; }
+        .product-img-wrapper::after {
+            content: "\f00e";
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            position: absolute;
+            right: 1rem;
+            bottom: 1rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.25s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+        }
+        .product-card:hover .product-img-wrapper::after { opacity: 1; }
+        .pv-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 16, 62, 0.72);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 10000;
+        }
+        .pv-overlay.open { display: flex; animation: fadeIn 0.25s ease; }
+        .pv-box {
+            background: #fff;
+            border-radius: 20px;
+            max-width: 960px;
+            width: 100%;
+            max-height: calc(100vh - 32px);
+            overflow: auto;
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            position: relative;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.35);
+        }
+        .pv-img { background: #f1f5f9; display: flex; align-items: center; justify-content: center; }
+        .pv-img img { width: 100%; height: 100%; max-height: 80vh; object-fit: contain; display: block; }
+        .pv-info { padding: 2.2rem 2rem; display: flex; flex-direction: column; gap: 0.9rem; }
+        .pv-info h3 { font-family: var(--font-heading); color: var(--secondary); font-size: 1.6rem; line-height: 1.3; margin: 0; }
+        .pv-info p { color: #4b5563; line-height: 1.7; margin: 0; }
+        .pv-info .product-price-wrapper { margin: 0.4rem 0 0.6rem 0; }
+        .pv-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.95);
+            color: var(--secondary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 2;
+        }
+        body.pv-lock { overflow: hidden; }
+
         @media (max-width: 768px) {
+            .pv-box { grid-template-columns: 1fr; }
+            .pv-img img { max-height: 55vh; }
+            .pv-info { padding: 1.5rem 1.25rem; }
+            .pv-info h3 { font-size: 1.3rem; }
             .store-hero-title {
                 font-size: 2.3rem;
             }
@@ -673,7 +800,7 @@ if (empty($products)) {
                     <i class="fas fa-puzzle-piece"></i> Rompecabezas
                 </button>
                 <button class="filter-btn" data-filter="accesorios">
-                    <i class="fas fa-sparkles"></i> Accesorios y Otros
+                    <i class="fas fa-gift"></i> Accesorios y Otros
                 </button>
             </div>
 
@@ -730,8 +857,14 @@ if (empty($products)) {
                             $image = 'https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&w=600&q=80'; 
                         }
                     ?>
-                    <div class="product-card" data-category="<?php echo htmlspecialchars($category); ?>">
-                        <div class="product-img-wrapper">
+                    <div class="product-card" data-category="<?php echo htmlspecialchars($category); ?>"
+                        data-name="<?php echo htmlspecialchars($name); ?>"
+                        data-image="<?php echo htmlspecialchars($image); ?>"
+                        data-desc="<?php echo htmlspecialchars($description); ?>"
+                        data-wa="<?php echo htmlspecialchars($wa_link); ?>"
+                        data-price="$<?php echo number_format($discount ?: $price, 0, ',', '.'); ?> COP"
+                        data-old="<?php echo $discount ? '$' . number_format($price, 0, ',', '.') . ' COP' : ''; ?>">
+                        <div class="product-img-wrapper" role="button" tabindex="0" aria-label="Ver <?php echo htmlspecialchars($name); ?> en grande">
                             <img class="product-img" src="<?php echo htmlspecialchars($image); ?>" loading="lazy" decoding="async" alt="<?php echo htmlspecialchars($name); ?>">
                             
                             <?php if ($is_customizable): ?>
@@ -757,7 +890,7 @@ if (empty($products)) {
                                 ?>
                             </span>
 
-                            <h3 class="product-title"><?php echo htmlspecialchars($name); ?></h3>
+                            <h3 class="product-title" role="button" tabindex="0"><?php echo htmlspecialchars($name); ?></h3>
 
                             <?php if (!empty($description)): ?>
                                 <p class="product-desc"><?php echo htmlspecialchars($description); ?></p>
@@ -804,9 +937,71 @@ if (empty($products)) {
         </div>
     </section>
 
+    <!-- Vista ampliada del producto -->
+    <div class="pv-overlay" id="pvOverlay" role="dialog" aria-modal="true" aria-labelledby="pvName">
+        <div class="pv-box">
+            <button class="pv-close" id="pvClose" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+            <div class="pv-img"><img id="pvImg" src="" alt=""></div>
+            <div class="pv-info">
+                <span class="product-category-tag" id="pvCat"></span>
+                <h3 id="pvName"></h3>
+                <p id="pvDesc"></p>
+                <div class="product-price-wrapper">
+                    <span class="price-current" id="pvPrice"></span>
+                    <span class="price-old" id="pvOld"></span>
+                </div>
+                <a id="pvWa" href="#" target="_blank" rel="noopener noreferrer" class="btn-buy">
+                    <i class="fab fa-whatsapp"></i> Lo quiero
+                </a>
+            </div>
+        </div>
+    </div>
+
     <?php include 'includes/footer.php'; ?>
 
     <script src="main.js?v=<?= @filemtime(__DIR__ . '/main.js') ?>"></script>
+    <script>
+        // Vista ampliada al pulsar la foto o el nombre del producto
+        document.addEventListener('DOMContentLoaded', () => {
+            const ov = document.getElementById('pvOverlay');
+            const $ = id => document.getElementById(id);
+            let lastFocus = null;
+
+            const open = card => {
+                const d = card.dataset;
+                $('pvImg').src = d.image;
+                $('pvImg').alt = d.name;
+                $('pvName').textContent = d.name;
+                $('pvCat').textContent = card.querySelector('.product-category-tag').textContent.trim();
+                $('pvDesc').textContent = d.desc;
+                $('pvDesc').style.display = d.desc ? '' : 'none';
+                $('pvPrice').textContent = d.price;
+                $('pvOld').textContent = d.old;
+                $('pvWa').href = d.wa;
+                lastFocus = document.activeElement;
+                ov.classList.add('open');
+                document.body.classList.add('pv-lock');
+                $('pvClose').focus();
+            };
+            const close = () => {
+                ov.classList.remove('open');
+                document.body.classList.remove('pv-lock');
+                if (lastFocus) lastFocus.focus();
+            };
+
+            document.querySelectorAll('.product-card').forEach(card => {
+                card.querySelectorAll('.product-img-wrapper, .product-title').forEach(el => {
+                    el.addEventListener('click', () => open(card));
+                    el.addEventListener('keydown', e => {
+                        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(card); }
+                    });
+                });
+            });
+            $('pvClose').addEventListener('click', close);
+            ov.addEventListener('click', e => { if (e.target === ov) close(); });
+            document.addEventListener('keydown', e => { if (e.key === 'Escape' && ov.classList.contains('open')) close(); });
+        });
+    </script>
     <script>
         // Filtrado dinámico por categorías
         document.addEventListener('DOMContentLoaded', () => {
