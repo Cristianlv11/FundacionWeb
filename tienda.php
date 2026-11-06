@@ -113,6 +113,15 @@ try {
         $pdo->prepare("INSERT INTO site_migrations (name) VALUES (?)")->execute([$migName2]);
     }
 
+    // 1d. Migración única: el buzo usa los básicos del catálogo del proveedor de VG (buzo franela en colores).
+    $migName3 = 'tienda_buzo_basicos_2026_11c';
+    $done->execute([$migName3]);
+    if ((int)$done->fetchColumn() === 0) {
+        $pdo->prepare("UPDATE products SET image = ? WHERE name = ?")
+            ->execute(['uploads/tienda/studio_buzo_basicos.jpg', 'Buzo / Hoodie con Capota Personalizable']);
+        $pdo->prepare("INSERT INTO site_migrations (name) VALUES (?)")->execute([$migName3]);
+    }
+
     // 2. Verificar si existen rompecabezas o productos personalizables; si no, inicializar
     $checkPuzzles = $pdo->query("SELECT COUNT(*) FROM products WHERE category = 'rompecabezas'")->fetchColumn();
     if ($checkPuzzles == 0 && file_exists(__DIR__ . '/admin/setup_tienda_personalizada.php')) {
