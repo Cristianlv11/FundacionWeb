@@ -79,6 +79,40 @@ try {
         $pdo->prepare("INSERT INTO site_migrations (name) VALUES (?)")->execute([$migName]);
     }
 
+    // 1c. Migración única: fotos reales de VG Personalizados editadas en estilo estudio + productos nuevos.
+    $migName2 = 'tienda_fotos_estudio_2026_11b';
+    $done->execute([$migName2]);
+    if ((int)$done->fetchColumn() === 0) {
+        $img = $pdo->prepare("UPDATE products SET image = ? WHERE name = ?");
+        foreach ([
+            'Camiseta Solidaria Personalizable'       => 'uploads/tienda/studio_camiseta_carinito.jpg',
+            'Mug Cerámico Personalizado (11 oz)'      => 'uploads/tienda/studio_mug.jpg',
+            'Termo Metálico Deportivo Personalizable' => 'uploads/tienda/studio_termo.jpg',
+            'Cojín Personalizado con Fotos'           => 'uploads/tienda/studio_cojin.jpg',
+            'Tula Personalizada con tu Diseño'        => 'uploads/tienda/studio_tula_maria_paz.jpg',
+        ] as $pName => $pImg) {
+            $img->execute([$pImg, $pName]);
+        }
+
+        $exists = $pdo->prepare("SELECT COUNT(*) FROM products WHERE name = ?");
+        $ins = $pdo->prepare("INSERT INTO products (name, price, discount, whatsapp_link, image, category, description, is_customizable) VALUES (?, ?, NULL, ?, ?, 'ropa', ?, ?)");
+        foreach ([
+            ['Camiseta Oficial Fundación ADN de Amor', 30000, 'uploads/tienda/studio_camiseta_oficial_adn.jpg', 0,
+                'La camiseta de nuestra fundación, con el logo ADN de Amor estampado al frente. Llévala con orgullo y apoya directamente a los niños del Centro de Desarrollo de Talentos.',
+                '¡Hola Fundación ADN de Amor! Lo quiero: me interesa la Camiseta Oficial ADN de Amor. ¿Qué tallas tienen disponibles?'],
+            ['Camiseta con la Foto de tu Mascota', 30000, 'uploads/tienda/studio_camiseta_mascota.jpg', 1,
+                'Estampamos a tu perro o gato con su nombre en una camiseta negra o blanca. Envíanos una foto nítida y nosotros armamos el diseño para que lo apruebes antes de estampar.',
+                '¡Hola Fundación ADN de Amor! Lo quiero: me gustaría una Camiseta con la Foto de mi Mascota. ¿Cómo les envío la foto?'],
+        ] as [$pName, $pPrice, $pImg, $pCustom, $pDesc, $pMsg]) {
+            $exists->execute([$pName]);
+            if ((int)$exists->fetchColumn() === 0) {
+                $ins->execute([$pName, $pPrice, 'https://wa.me/573162522445?text=' . urlencode($pMsg), $pImg, $pDesc, $pCustom]);
+            }
+        }
+
+        $pdo->prepare("INSERT INTO site_migrations (name) VALUES (?)")->execute([$migName2]);
+    }
+
     // 2. Verificar si existen rompecabezas o productos personalizables; si no, inicializar
     $checkPuzzles = $pdo->query("SELECT COUNT(*) FROM products WHERE category = 'rompecabezas'")->fetchColumn();
     if ($checkPuzzles == 0 && file_exists(__DIR__ . '/admin/setup_tienda_personalizada.php')) {
@@ -107,7 +141,7 @@ if (empty($products)) {
             'discount' => null,
             'category' => 'ropa',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/real_camiseta_carinito.jpg',
+            'image' => 'uploads/tienda/studio_camiseta_carinito.jpg',
             'description' => 'Camiseta en algodón 100% peinado premium (180g). Personalízala con tu foto, frase o logo. Tallas de niño a adulto (XS a XL).',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, me interesa personalizar la Camiseta Solidaria. ¿Cómo les envío mi diseño o foto?")
         ],
@@ -140,7 +174,7 @@ if (empty($products)) {
             'discount' => null,
             'category' => 'vasos',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/vg_mug.jpg',
+            'image' => 'uploads/tienda/studio_mug.jpg',
             'description' => 'Taza de cerámica blanca brillante premium (11 oz). Impresión a full color apta para microondas y lavavajillas con tu foto o dedicatoria.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, quiero pedir un Mug Cerámico Personalizado con foto. ¿Cómo se los envío?")
         ],
@@ -162,7 +196,7 @@ if (empty($products)) {
             'discount' => null,
             'category' => 'vasos',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/vg_termo.jpg',
+            'image' => 'uploads/tienda/studio_termo.jpg',
             'description' => 'Botella térmica de 600ml en acero inoxidable con tapa hermética y mosquetón. Grabado o estampado duradero con tu nombre o logo.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, quiero encargar un Termo Metálico Deportivo Personalizado. ¿Qué colores tienen?")
         ],

@@ -51,7 +51,7 @@ try {
             'discount' => 30000,
             'category' => 'ropa',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/real_camiseta_carinito.jpg',
+            'image' => 'uploads/tienda/studio_camiseta_carinito.jpg',
             'description' => 'Camiseta en algodón 100% peinado premium (180g). Personalízala con tu foto familiar, frase inspiradora o logo. Tallas de niño a adulto (XS a XL).',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, me interesa personalizar la Camiseta Solidaria. ¿Cómo les envío mi diseño o foto?")
         ],
@@ -83,7 +83,7 @@ try {
             'discount' => 18000,
             'category' => 'vasos',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/vg_mug.jpg',
+            'image' => 'uploads/tienda/studio_mug.jpg',
             'description' => 'Taza de cerámica blanca brillante de alta calidad (11 oz). Impresión sublimada a full color resistente a microondas y lavavajillas con tu foto, mensaje o nombre.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, quiero pedir un Mug Cerámico Personalizado con foto. ¿Cómo se los envío?")
         ],
@@ -103,7 +103,7 @@ try {
             'discount' => 38000,
             'category' => 'vasos',
             'is_customizable' => 1,
-            'image' => 'uploads/tienda/vg_termo.jpg',
+            'image' => 'uploads/tienda/studio_termo.jpg',
             'description' => 'Botella térmica de 600ml en acero inoxidable con tapa hermética y mosquetón para llevar al colegio o gym. Grabado o estampado duradero.',
             'whatsapp_link' => "https://wa.me/{$wa_phone}?text=" . urlencode("Hola Fundación ADN de Amor, quiero encargar un Termo Metálico Deportivo Personalizado. ¿Qué colores tienen?")
         ],
