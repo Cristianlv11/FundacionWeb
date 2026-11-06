@@ -425,7 +425,7 @@ if (empty($products)) {
         }
         .product-img-wrapper {
             position: relative;
-            height: 250px;
+            aspect-ratio: 1 / 1;
             overflow: hidden;
             background: #f1f5f9;
         }
