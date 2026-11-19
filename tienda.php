@@ -1104,7 +1104,7 @@ if (empty($products)) {
 
             <div class="services-grid">
                 <?php foreach ($servicios as [$sIcon, $sTitle, $sDesc, $sItems]): ?>
-                    <?php $sWa = 'https://wa.me/573162522445?text=' . urlencode("¡Hola Fundación ADN de Amor! Me interesa el servicio de {$sTitle}. ¿Me pueden dar más información y una cotización?"); ?>
+                    <?php $sWa = 'https://wa.me/573104467692?text=' . urlencode("¡Hola! Vi en la web de la Fundación ADN de Amor el servicio de {$sTitle}. ¿Me puedes dar más información y una cotización?"); ?>
                     <article class="service-card">
                         <div class="service-icon"><i class="fas <?php echo $sIcon; ?>"></i></div>
                         <h3><?php echo htmlspecialchars($sTitle); ?></h3>
