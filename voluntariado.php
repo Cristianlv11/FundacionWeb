@@ -292,6 +292,11 @@
                     <span class="nav-text">Tienda Solidaria</span>
                 </a>
 
+                <a href="servicios" style="font-weight: 600; color: var(--text-dark); text-decoration: none;">
+                    <i class="fas fa-laptop-code nav-icon"></i>
+                    <span class="nav-text">Servicios</span>
+                </a>
+
                 <a href="blog" style="font-weight: 600; color: var(--text-dark); text-decoration: none;">
                     <i class="fas fa-newspaper nav-icon"></i>
                     <span class="nav-text">Blog</span>

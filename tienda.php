@@ -251,9 +251,9 @@ if (empty($products)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tienda Solidaria, Productos Personalizables y Servicios Digitales | Fundación ADN de Amor</title>
+    <title>Tienda Solidaria y Productos Personalizables | Fundación ADN de Amor</title>
     <meta name="description"
-        content="Tienda Solidaria ADN de Amor: ropa, vasos, mugs y rompecabezas 100% personalizables con tu foto o mensaje. También ofrecemos páginas web, aplicaciones, gestión de redes sociales, videos y SEO. Cada compra y cada proyecto financian el Centro de Desarrollo de Talentos (CDT).">
+        content="Tienda Solidaria ADN de Amor: ropa, vasos, mugs y rompecabezas 100% personalizables con tu foto o mensaje. Cada compra financia el Centro de Desarrollo de Talentos (CDT) y apoya a niños y familias vulnerables.">
     <link rel="canonical" href="https://fundacionadndeamor.org/tienda">
 
     <!-- Favicon -->
@@ -663,94 +663,11 @@ if (empty($products)) {
         }
         body.pv-lock { overflow: hidden; }
 
-        /* Atajos del encabezado */
-        .store-hero-actions { display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap; }
-        .store-hero-actions a { display: inline-flex; align-items: center; gap: 0.5rem; }
-        .btn-hero-outline { background: #ffffff; border: 2px solid var(--secondary); color: var(--secondary); }
-        .btn-hero-outline:hover { background: var(--secondary); color: #ffffff; transform: translateY(-2px); }
-
-        /* Servicios digitales con causa */
-        .services-section {
-            background: #ffffff;
-            padding: 5rem 0 5.5rem 0;
-            border-top: 1px solid #eef1f5;
-            scroll-margin-top: 90px;
-        }
-        .services-head { text-align: center; max-width: 760px; margin: 0 auto 3rem auto; }
-        .services-head h2 {
-            font-family: var(--font-heading);
-            color: var(--secondary);
-            font-size: 2.4rem;
-            font-weight: 800;
-            line-height: 1.2;
-            margin: 0 0 1rem 0;
-        }
-        .services-head p { color: var(--text-dark); font-size: 1.08rem; line-height: 1.75; margin: 0; }
-        .services-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.6rem;
-        }
-        .service-card {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 18px;
-            padding: 1.9rem 1.7rem;
-            display: flex;
-            flex-direction: column;
-            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
-        }
-        .service-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 14px 28px -12px rgba(0, 16, 62, 0.18);
-            border-color: rgba(230, 57, 70, 0.3);
-        }
-        .service-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
-            background: rgba(230, 57, 70, 0.1);
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.35rem;
-            margin-bottom: 1.1rem;
-        }
-        .service-card h3 {
-            font-family: var(--font-heading);
-            color: var(--secondary);
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin: 0 0 0.55rem 0;
-        }
-        .service-card > p { color: #4b5563; font-size: 0.95rem; line-height: 1.6; margin: 0 0 1rem 0; }
-        .service-card ul { list-style: none; padding: 0; margin: 0 0 1.4rem 0; display: grid; gap: 0.45rem; }
-        .service-card li { color: var(--text-dark); font-size: 0.92rem; line-height: 1.45; display: flex; gap: 0.55rem; }
-        .service-card li i { color: var(--primary); font-size: 0.8rem; margin-top: 0.3rem; }
-        .service-card .btn-buy { margin-top: auto; }
-        .services-impact {
-            margin-top: 3rem;
-            background: #fff5f5;
-            border: 1px solid rgba(230, 57, 70, 0.18);
-            border-radius: 18px;
-            padding: 1.6rem 1.8rem;
-            display: flex;
-            gap: 1.2rem;
-            align-items: center;
-        }
-        .services-impact i { color: var(--primary); font-size: 1.8rem; flex-shrink: 0; }
-        .services-impact p { margin: 0; color: var(--text-dark); line-height: 1.65; }
-
         @media (max-width: 768px) {
             .pv-box { grid-template-columns: 1fr; }
             .pv-img img { max-height: 55vh; }
             .pv-info { padding: 1.5rem 1.25rem; }
             .pv-info h3 { font-size: 1.3rem; }
-            .services-section { padding: 3.5rem 0 4rem 0; }
-            .services-head h2 { font-size: 1.9rem; }
-            .services-grid { grid-template-columns: 1fr; }
-            .services-impact { flex-direction: column; text-align: center; padding: 1.4rem 1.2rem; }
             .store-hero-title {
                 font-size: 2.3rem;
             }
@@ -839,6 +756,11 @@ if (empty($products)) {
                     <i class="fas fa-shopping-bag nav-icon"></i>
                     <span class="nav-text">Tienda Solidaria</span>
                 </a>
+
+                <a href="servicios" style="font-weight: 600; color: var(--text-dark); text-decoration: none;">
+                    <i class="fas fa-laptop-code nav-icon"></i>
+                    <span class="nav-text">Servicios</span>
+                </a>
                 
                 <a href="blog" style="font-weight: 600; color: var(--text-dark); text-decoration: none;">
                     <i class="fas fa-newspaper nav-icon"></i>
@@ -862,10 +784,6 @@ if (empty($products)) {
             <p class="store-hero-desc">
                 Transforma tus regalos, recuerdos y dotaciones en oportunidades de vida. Personaliza <strong>ropa, vasos, termos y rompecabezas</strong> con tu foto familiar, nombre o mensaje inspirador. Con cada compra financias la formación de niños y jóvenes en el <strong>Centro de Desarrollo de Talentos (CDT)</strong>.
             </p>
-            <div class="store-hero-actions">
-                <a href="#productGrid" class="btn btn-primary"><i class="fas fa-shopping-bag"></i> Ver productos</a>
-                <a href="#servicios" class="btn btn-hero-outline"><i class="fas fa-laptop-code"></i> Servicios digitales</a>
-            </div>
         </div>
     </section>
 
@@ -1064,69 +982,6 @@ if (empty($products)) {
                 </div>
             </div>
 
-        </div>
-    </section>
-
-    <!-- Servicios digitales con causa -->
-    <?php
-        $servicios = [
-            ['fa-globe', 'Páginas web',
-                'Sitios para negocios, emprendimientos, iglesias y fundaciones, pensados para que te encuentren y te escriban.',
-                ['Diseño adaptado a celular y computador', 'Botón de WhatsApp y formularios de contacto', 'Dominio, hosting y correo corporativo', 'Panel para que actualices tus textos y fotos']],
-            ['fa-mobile-screen-button', 'Aplicaciones a la medida',
-                'Apps web y móviles que ordenan tu operación: menos papel, menos Excel y menos mensajes perdidos.',
-                ['Pedidos, inventarios, citas y reservas', 'Paneles de administración con reportes', 'Tiendas en línea y catálogos', 'Acompañamiento y soporte después de entregar']],
-            ['fa-hashtag', 'Gestión de redes sociales',
-                'Nos encargamos de tus redes para que publiques con constancia y una imagen coherente.',
-                ['Plan de contenidos mensual', 'Publicación en Instagram, Facebook y TikTok', 'Textos y hashtags para cada publicación', 'Informe mensual de resultados']],
-            ['fa-video', 'Videos para redes',
-                'Reels, TikToks y videos promocionales con ritmo, subtítulos y música para que la gente se quede viéndolos.',
-                ['Edición de tus grabaciones', 'Subtítulos, música y efectos', 'Formatos vertical, cuadrado y horizontal', 'Videos de producto y de lanzamiento']],
-            ['fa-palette', 'Posts y diseño gráfico',
-                'Piezas listas para publicar con tus colores, tu logo y un mensaje claro.',
-                ['Posts, carruseles e historias', 'Flyers y piezas para campañas', 'Plantillas con tu identidad visual', 'Material para eventos y fechas especiales']],
-            ['fa-magnifying-glass-chart', 'SEO y posicionamiento',
-                'Te ayudamos a aparecer cuando buscan lo que ofreces en Google y en los mapas.',
-                ['Perfil de Google Business optimizado', 'Palabras clave y textos para buscadores', 'Velocidad y SEO técnico de tu página', 'Registro en Google Search Console']],
-        ];
-    ?>
-    <section class="services-section" id="servicios">
-        <div class="container">
-            <div class="services-head">
-                <div class="store-badge">
-                    <i class="fas fa-laptop-code"></i> Servicios Digitales con Causa
-                </div>
-                <h2>Tu proyecto digital también <span style="color: var(--primary);">transforma vidas</span></h2>
-                <p>
-                    Desde la fundación ofrecemos servicios de tecnología y comunicación para negocios, emprendedores y organizaciones. Recibes un trabajo profesional y, con cada proyecto, una parte de lo que pagas se queda en la fundación para sostener el <strong>Centro de Desarrollo de Talentos (CDT)</strong>.
-                </p>
-            </div>
-
-            <div class="services-grid">
-                <?php foreach ($servicios as [$sIcon, $sTitle, $sDesc, $sItems]): ?>
-                    <?php $sWa = 'https://wa.me/573104467692?text=' . urlencode("¡Hola! Vi en la web de la Fundación ADN de Amor el servicio de {$sTitle}. ¿Me puedes dar más información y una cotización?"); ?>
-                    <article class="service-card">
-                        <div class="service-icon"><i class="fas <?php echo $sIcon; ?>"></i></div>
-                        <h3><?php echo htmlspecialchars($sTitle); ?></h3>
-                        <p><?php echo htmlspecialchars($sDesc); ?></p>
-                        <ul>
-                            <?php foreach ($sItems as $sItem): ?>
-                                <li><i class="fas fa-check"></i> <span><?php echo htmlspecialchars($sItem); ?></span></li>
-                            <?php endforeach; ?>
-                        </ul>
-                        <a href="<?php echo htmlspecialchars($sWa); ?>" target="_blank" rel="noopener noreferrer" class="btn-buy">
-                            <i class="fab fa-whatsapp"></i> Cotizar este servicio
-                        </a>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-
-            <div class="services-impact">
-                <i class="fas fa-hand-holding-heart"></i>
-                <p>
-                    <strong>¿Cómo apoya tu proyecto a la fundación?</strong> Cotizamos cada trabajo según lo que necesitas y, del valor de cada proyecto, una parte se destina a los programas de la Fundación ADN de Amor. Así tu página, tu app o tus redes también ayudan a niños y jóvenes de Santa Rosa de Cabal.
-                </p>
-            </div>
         </div>
     </section>
 
