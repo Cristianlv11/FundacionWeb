@@ -91,13 +91,19 @@
     }
     </script>
 
-    <!-- Botón Flotante de WhatsApp -->
-    <a href="https://wa.me/573162522445?text=Hola,%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20la%20Fundaci%C3%B3n%20ADN%20de%20Amor" target="_blank" rel="noopener noreferrer" class="whatsapp-float" aria-label="Escríbenos por WhatsApp" title="Escríbenos por WhatsApp">
+    <!-- Botón Flotante de WhatsApp (una página puede definir $wa_float antes de incluir el pie) -->
+    <?php
+        $waf = array_merge([
+            'url'   => 'https://wa.me/573162522445?text=Hola,%20quisiera%20m%C3%A1s%20informaci%C3%B3n%20sobre%20la%20Fundaci%C3%B3n%20ADN%20de%20Amor',
+            'label' => '316 252 2445',
+        ], isset($wa_float) && is_array($wa_float) ? $wa_float : []);
+    ?>
+    <a href="<?= htmlspecialchars($waf['url']) ?>" target="_blank" rel="noopener noreferrer" class="whatsapp-float" aria-label="Escríbenos por WhatsApp" title="Escríbenos por WhatsApp">
         <div class="whatsapp-icon-box">
             <i class="fab fa-whatsapp"></i>
         </div>
         <div class="whatsapp-text-box">
             <span class="whatsapp-label">WhatsApp</span>
-            <span class="whatsapp-number">316 252 2445</span>
+            <span class="whatsapp-number"><?= htmlspecialchars($waf['label']) ?></span>
         </div>
     </a>

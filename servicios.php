@@ -456,7 +456,14 @@
         </div>
     </section>
 
-    <?php include 'includes/footer.php'; ?>
+    <?php
+        // En esta página el botón flotante va al WhatsApp de servicios digitales
+        $wa_float = [
+            'url'   => 'https://wa.me/573104467692?text=' . urlencode('¡Hola! Vi en la web de la Fundación ADN de Amor los servicios digitales y quiero más información.'),
+            'label' => '310 446 7692',
+        ];
+        include 'includes/footer.php';
+    ?>
 
     <script src="main.js?v=<?= @filemtime(__DIR__ . '/main.js') ?>"></script>
 </body>
