@@ -196,6 +196,25 @@
         .work-link.is-private { color: #6b7280; font-weight: 600; }
         .works-more { text-align: center; margin-top: 2.5rem; }
 
+        /* Videos para redes */
+        .videos-head { text-align: center; margin: 4rem auto 2rem auto; max-width: 640px; }
+        .videos-head h3 { font-family: var(--font-heading); color: var(--secondary); font-size: 1.6rem; font-weight: 800; margin: 0 0 0.5rem 0; }
+        .videos-head h3 i { color: var(--primary); margin-right: 0.4rem; }
+        .videos-head p { color: var(--text-dark); margin: 0; line-height: 1.6; }
+        .videos-grid { display: flex; justify-content: center; gap: 2rem; flex-wrap: wrap; }
+        .video-card {
+            width: 320px;
+            max-width: 100%;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .video-frame { aspect-ratio: 9 / 16; background: #0b1020; }
+        .video-frame video { width: 100%; height: 100%; object-fit: cover; display: block; }
+
         /* Cierre */
         .services-cta { background: #ffffff; padding: 4.5rem 0 5rem 0; }
         .services-cta .services-impact { margin-top: 0; margin-bottom: 2.2rem; }
@@ -424,6 +443,36 @@
                             <?php else: ?>
                                 <span class="work-link is-private"><i class="fas fa-lock"></i> <?php echo $wLink; ?></span>
                             <?php endif; ?>
+                        </div>
+                    </article>
+                <?php endforeach; ?>
+            </div>
+
+            <!-- Videos para redes -->
+            <?php
+                $videos = [
+                    ['video-piedemonte', 'Video promocional para redes', 'Hotel Piedemonte',
+                        'Reel vertical para un hotel campestre del Eje Cafetero: tomas del lugar, textos animados y locución.'],
+                    ['video-vg-navidad', 'Video de lanzamiento', 'VG Personalizados · Navidad 2026',
+                        'Presentación de la colección navideña con el catálogo de productos, música y subtítulos.'],
+                ];
+            ?>
+            <div class="videos-head">
+                <h3><i class="fas fa-video"></i> Videos para redes</h3>
+                <p>Dale play: así se ven los videos que hacemos para Instagram, TikTok y WhatsApp.</p>
+            </div>
+            <div class="videos-grid">
+                <?php foreach ($videos as [$vFile, $vTag, $vTitle, $vDesc]): ?>
+                    <article class="video-card">
+                        <div class="video-frame">
+                            <video controls playsinline preload="none" poster="uploads/servicios/<?php echo $vFile; ?>.jpg" width="720" height="1280">
+                                <source src="uploads/servicios/<?php echo $vFile; ?>.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="work-body">
+                            <span class="work-tag"><?php echo htmlspecialchars($vTag); ?></span>
+                            <h3><?php echo htmlspecialchars($vTitle); ?></h3>
+                            <p><?php echo htmlspecialchars($vDesc); ?></p>
                         </div>
                     </article>
                 <?php endforeach; ?>
